@@ -1,2 +1,4 @@
-# coclustering
-Co-clustering with Python
+# Co-Clustering
+
+Implementation of co-clustering approaches in Python. 
+
