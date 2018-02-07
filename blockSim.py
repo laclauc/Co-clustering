@@ -10,15 +10,15 @@ def partitionrnd(n, prop, g):
     z_i = g + 1 - np.sum(np.tile(tmp,(g,1)).T < np.tile(np.cumsum(prop),(n,1)), axis = 1)
     return z_i
 
-def generatedata(mu, n=100, d=100, g=2, m=2, prop_r = None, prop_c = None, noise=1):
-	"""Generate a data matrix with a gxm bloc structure.
+def generatedata_cont(mu, n=100, d=100, g=2, m=2, prop_r = None, prop_c = None, type_data = 'continuous', noise=1):
+	"""Generate a data matrix with either continuous, binary or category input and a gxm bloc structure.
     n      : number of rows
 	d      : number of columns
     prop_r : proportion of row clusters
     prop_c : proportion of column clusters
     g      : number of row clusters
     m      : number of column clusters
-	mu     : a gxm matrix with the mean of each block
+	mu     : a gxm matrix with the mean/mode of each block
     Return the matrix and the partitions
     """
 	g, m = mu.shape
@@ -39,8 +39,23 @@ def generatedata(mu, n=100, d=100, g=2, m=2, prop_r = None, prop_c = None, noise
 	s = (n, d)
 	data = np.zeros(s)
 
-	for i in range(n):
-		for j in range(d):
-			data[i][j] = np.random.normal(mu.item(z_i[i]-1,w_j[j]-1), sigma.item(z_i[i]-1,w_j[j]-1),1)[0]
+	if type_data == 'continuous':
+		for i in range(n):
+			for j in range(d):
+				data[i][j] = np.random.normal(mu.item(z_i[i]-1,w_j[j]-1), sigma.item(z_i[i]-1,w_j[j]-1),1)[0]
 	
+	if type_data == 'binary':
+		for i in range(n):
+			for j in range(d):
+				data[i][j] = np.random.binomial(1,1,mu.item(z_i[i]-1,w_j[j]-1))[0]	
+
+	if type_data == 'multinomial':
+		for i in range(n):
+			for j in range(d):
+				data[i][j] = np.random.multinomial(1,mu.item(z_i[i]-1,w_j[j]-1))[0]		
+
 	return data, z_i, w_j
+
+	
+
+
